@@ -84,7 +84,12 @@ export default {
         const response = await MovimientoOperarioService.login(body);
         this.$store.commit("setOperarios", response.data);
       } catch (err) {
-        console.log(err);
+        this.$swal({
+          icon: "error",
+          title: err.response.data.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
       this.value = "";
     },

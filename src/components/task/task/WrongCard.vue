@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import TareaNoSQLService from "../../../services/api/TareaNoSQLService";
+
 export default {
   components: {},
   data: function () {
@@ -32,6 +34,25 @@ export default {
     };
   },
   methods: {
+     async insertWrongs() {
+      try {
+        const response = await TareaNoSQLService.addWrong({
+          idPuesto: this.$store.getters.puesto.Id,
+          saldos: this.wrongs,
+        });
+
+        if (response.data != null && response.data._id) {
+          this.$store.commit("setTask", response.data);
+        }
+      } catch (error) {
+        this.$swal({
+          icon: "error",
+          title: error.response.data.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    },
     increase() {
       this.decreasing = false;
       this.increasing = true;
@@ -41,10 +62,10 @@ export default {
       if(this.timerDecrease != null) clearTimeout(this.timerDecrease)
       if(this.timerIncrease != null) clearTimeout(this.timerIncrease)
       
-      this.timerIncrease = setTimeout(() => {
+      this.timerIncrease = setTimeout(async () => {
         this.increasing = false;
 
-        // backend
+        await this.insertWrongs()
 
         this.wrongs = 0
       }, 2000);
@@ -57,10 +78,10 @@ export default {
       if(this.timerDecrease != null) clearTimeout(this.timerDecrease)
       if(this.timerIncrease != null) clearTimeout(this.timerIncrease)
 
-      this.timerDecrease=setTimeout(() => {
+      this.timerDecrease=setTimeout(async () => {
         this.decreasing = false;
 
-        // backend call
+        await this.insertWrongs()
 
         this.wrongs = 0
       }, 2000);
@@ -79,7 +100,7 @@ export default {
     cantidadSaldos() {
       let cantidadSaldos = 0;
       if (this.$store.getters.hayTarea) {
-        for (const pulso in this.$store.getters.tarea.cantidadSaldosPuesto) {
+        for (const pulso of this.$store.getters.tarea.cantidadSaldosPuesto) {
           cantidadSaldos += pulso.cantidad;
         }
       }

@@ -47,19 +47,19 @@ const store = new Vuex.Store({
       state.token = null
       state.user = null
     },
-    setTarea(state, tarea) {
+    setTask(state, tarea) {
       state.tarea = tarea
     },
-    removeTarea(state) {
+    removeTask(state) {
       state.tarea = null
     },
   },
   actions: {
-    setTarea({ commit }, tarea) {
-      commit('setTarea', tarea)
+    setTask({ commit }, tarea) {
+      commit('setTask', tarea)
     },
-    removeTarea({ commit }) {
-      commit('removeTarea')
+    removeTask({ commit }) {
+      commit('removeTask')
     },
     setToken({ commit }, token) {
       commit('setToken', token)

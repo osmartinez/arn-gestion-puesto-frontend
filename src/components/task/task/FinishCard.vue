@@ -1,19 +1,39 @@
 <template>
-    <va-button class="finish" color="success" large @click="finish">TERMINAR</va-button>
+  <va-button class="finish" color="success" large @click="finish"
+    >TERMINAR</va-button
+  >
 </template>
 
 <script>
+import TareaNoSQLService from "../../../services/api/TareaNoSQLService";
 export default {
-  methods:{
-    finish(){
-      if(this.$store.getters.puesto.EsManual){
-        alert('manual')
+  methods: {
+    async finish() {
+      if (this.$store.getters.puesto.EsManual) {
+        alert("manual");
+      } else {
+        if (this.$store.getters.hayPuesto) {
+          try {
+            const response = await TareaNoSQLService.end({
+              idPuesto: this.$store.getters.puesto.Id,
+            });
+            if (response.data == null || !response.data._id) {
+              this.$store.commit("removeTask");
+            } else {
+              this.$store.commit("setTask", response.data);
+            }
+          } catch (err) {
+            this.$swal({
+              icon: "error",
+              title: err.response.data.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        }
       }
-      else{
-        alert('auto')
-      }
-    }
-  }
+    },
+  },
 };
 </script>
 

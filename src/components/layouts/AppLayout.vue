@@ -97,11 +97,9 @@ export default {
 
         const response3 = await TareaNoSQLService.getCurrentTask(this.$store.getters.puesto.Id)
         if(response3.data != null && response3.data._id){
-          this.$store.commit("setTarea",response3.data)
+          this.$store.commit("setTask",response3.data)
         }
       }
-
-      console.log(this.$store.getters.operarios);
     }
   },
 };

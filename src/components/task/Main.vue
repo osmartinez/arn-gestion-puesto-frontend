@@ -30,14 +30,33 @@ export default {
       cadenaLectura: "",
     };
   },
-  mounted: function () {
+  mounted: async function () {
     this.hiloLectura = setInterval(this.getGpioState, 3000);
     document.addEventListener("keyup", this.keyUp, false);
+    if (this.$store.getters.hayPuesto) {
+      const response3 = await TareaNoSQLService.getCurrentTask(
+        this.$store.getters.puesto.Id
+      );
+      if (response3.data != null && response3.data._id) {
+        this.$store.commit("setTask", response3.data);
+      }
+      else{
+        this.$store.commit("removeTask")
+      }
+    }
+    
+    this.$mqtt.callbacks['/moldeado/plc/normal'] = this.mqttOnReceived
+
   },
+
   beforeDestroy: function () {
     clearInterval(this.hiloLectura);
+    document.removeEventListener("keyup", this.keyUp);
   },
   methods: {
+    mqttOnReceived(msg){
+      console.log(msg)
+    },
     async getGpioState() {
       try {
         const response = await GpioService.getGpioState();
@@ -103,21 +122,7 @@ export default {
       if (code.includes("Numpad") || code.includes("Digit")) {
         this.cadenaLectura += code[code.length - 1];
       } else if (e.code == "F2") {
-        // F1 PRESIONADO SIMULAR PULSO
-        /*$.ajax({
-          method: "POST",
-          timeout: 3000,
-          url: `/dashboard/tarea/pulsoSimulado`,
-          dataType: "json",
-          success: (tareasActualesPuesto) => {
-            if (tareasActualesPuesto != null) {
-              Puesto.refrescarTareasPuesto(tareasActualesPuesto);
-            }
-          },
-          error: (err) => {
-            error(err.responseJSON.message);
-          },
-        });*/
+        
         e.preventDefault();
       }
 
@@ -130,8 +135,8 @@ export default {
 
           try {
             const response = await TareaNoSQLService.start(tareaNoSql);
-            this.$store.commit('setTarea',response.data)
-            console.log(this.$store.getters.tarea)
+            this.$store.commit("setTask", response.data);
+            console.log(this.$store.getters.tarea);
             this.$swal({
               icon: "success",
               title: "Tarea comenzada",
@@ -154,8 +159,6 @@ export default {
             timer: 1500,
           });
 
-          //info(`Codigo OF reconocido\n${cadenaLectura}`)
-          //buscarOF(cadenaLectura)
         } else {
           //error(`Codigo no reconocido\n${cadenaLectura}`);
         }

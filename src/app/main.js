@@ -20,6 +20,24 @@ import VueTabs from 'vue-nav-tabs'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import mqtt from 'mqtt'
+
+var client = mqtt.connect('ws://192.168.0.104:8883');
+client.callbacks = {}
+client.on('connect',()=>{
+  console.log('MQTT CONECTADO')
+  client.subscribe('/moldeado/plc/normal',(err)=>{
+    if(err){
+      console.log(err)
+    }
+  })
+})
+client.on('message',(topic,message)=>{
+  if(client.callbacks[topic]){
+    client.callbacks[topic](String(message))
+  }
+})
+Vue.prototype.$mqtt = client
 
 Vue.use(VueTabs)
 Vue.use(VuesticPlugin)

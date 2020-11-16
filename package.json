@@ -13,6 +13,7 @@
     "detect-browser": "^5.2.0",
     "element-resize-detector": "^1.2.1",
     "flag-icon-css": "^3.5.0",
+    "mqtt": "^4.2.5",
     "normalize.css": "^8.0.1",
     "nprogress": "^0.2.0",
     "register-service-worker": "^1.7.1",
