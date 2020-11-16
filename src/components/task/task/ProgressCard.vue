@@ -1,12 +1,57 @@
 <template>
   <va-card class="progress">
-    <h1 class="h1">TR00267</h1>
-    <h1 class="h1">&lt;44&gt;</h1>
-    <h1 class="h1">200/1000</h1>
+    <h1 class="h1">{{ codigoUtillaje }}</h1>
+    <h1 class="h1">{{ tallaUtillaje }}</h1>
+    <h1 class="h1">{{ contador }}</h1>
   </va-card>
 </template>
 <script>
-export default {};
+export default {
+  computed: {
+    codigoUtillaje() {
+      if (this.$store.getters.hayTarea) {
+        return this.$store.getters.tarea.utillaje;
+      } else {
+        return "";
+      }
+    },
+    tallaUtillaje() {
+      if (this.$store.getters.hayTarea) {
+        return `<${this.$store.getters.tarea.tallaUtillaje}>`;
+      } else {
+        return "";
+      }
+    },
+    contador() {
+      if (this.$store.getters.hayTarea) {
+        let cantidadFabricada = 0;
+        let cantidadFabricar = 0;
+
+        for (const detalle of this.$store.getters.tarea.maquinas[0]
+          .detallesTarea) {
+          cantidadFabricar += detalle.cantidadFabricar;
+          cantidadFabricada += detalle.cantidadFabricada;
+        }
+
+        for (const pulso of this.$store.getters.tarea.cantidadFabricadaPuesto) {
+          cantidadFabricada += pulso.cantidad;
+        }
+
+        for (const pulso of this.$store.getters.tarea.cantidadDefectuosaPuesto) {
+          cantidadFabricada += pulso.cantidad;
+        }
+
+        for (const pulso of this.$store.getters.tarea.cantidadSaldosPuesto) {
+          cantidadFabricada -= pulso.cantidad;
+        }
+
+        return `${cantidadFabricada}/${cantidadFabricar}`;
+      } else {
+        return "";
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>

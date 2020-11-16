@@ -17,7 +17,8 @@ const store = new Vuex.Store({
     puesto: state => state.puesto,
     hayOperarios: state => state.operarios.length > 0,
     operarios: state => state.operarios,
-    tareas: state => state.tareas,
+    tarea: state => state.tarea,
+    hayTarea: state => state.tarea != null,
   },
   modules: {
     app,
@@ -27,7 +28,7 @@ const store = new Vuex.Store({
     user: null,
     puesto: null,
     operarios: [],
-    tareas: [],
+    tarea: null,
   },
   mutations: {
     setToken(state, token) {
@@ -46,25 +47,19 @@ const store = new Vuex.Store({
       state.token = null
       state.user = null
     },
-    addTarea(state, tarea) {
-      state.tareas.push(tarea)
+    setTarea(state, tarea) {
+      state.tarea = tarea
     },
-    removeTarea(state, tarea) {
-      state.tareas = state.tareas.filter(x => x.idSql !== tarea.Id)
+    removeTarea(state) {
+      state.tarea = null
     },
-    removeAllTareas(state) {
-      state.tareas = []
-    }
   },
   actions: {
-    addTarea({ commit }, tarea) {
-      commit('addTarea', tarea)
+    setTarea({ commit }, tarea) {
+      commit('setTarea', tarea)
     },
-    removeTarea({ commit }, tarea) {
-      commit('removeTarea', tarea)
-    },
-    removeAllTareas({ commit }) {
-      commit('removeAllTareas')
+    removeTarea({ commit }) {
+      commit('removeTarea')
     },
     setToken({ commit }, token) {
       commit('setToken', token)

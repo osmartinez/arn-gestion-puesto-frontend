@@ -36,6 +36,8 @@
 <script>
 import PuestoBackendService from "../../services/backend/PuestoService";
 import MovimientoOperarioService from "../../services/api/MovimientoOperarioService";
+import TareaNoSQLService from "../../services/api/TareaNoSQLService";
+
 import AppPageLayout from "./AppPageLayout";
 import AppNavbar from "./app-navbar/AppNavbar";
 import AppTopbar from "./app-topbar/AppTopbar";
@@ -83,14 +85,23 @@ export default {
     },
   },
   mounted: async function () {
-    if (this.$store.getters.puesto == null) {
+    if (!this.$store.getters.hayPuesto) {
       const response = await PuestoBackendService.getPuesto();
-      this.$store.commit("setPuesto", response.data);
+      this.$store.commit("setPuesto", response.data)
 
-      const response2 = await MovimientoOperarioService.findAll({idPuesto: this.$store.getters.puesto.Id})
-      this.$store.commit("setOperarios", response2.data)
+      if (this.$store.getters.hayPuesto) {
+        const response2 = await MovimientoOperarioService.findAll({
+          idPuesto: this.$store.getters.puesto.Id,
+        });
+        this.$store.commit("setOperarios", response2.data)
 
-      console.log(this.$store.getters.operarios)
+        const response3 = await TareaNoSQLService.getCurrentTask(this.$store.getters.puesto.Id)
+        if(response3.data != null && response3.data._id){
+          this.$store.commit("setTarea",response3.data)
+        }
+      }
+
+      console.log(this.$store.getters.operarios);
     }
   },
 };

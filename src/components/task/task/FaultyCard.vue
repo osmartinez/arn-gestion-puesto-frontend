@@ -1,11 +1,11 @@
 <template>
   <va-card class="faulty">
     <div class="marcador">
-      <h1 class="h1">200</h1>
+      <h1 class="h1">{{ cantidadDefectuosa }}</h1>
       <h4 class="h4">
         <i v-show="isDecreasing" class="va-icon fa fa-arrow-down"></i>
         <i v-show="isIncreasing" class="va-icon fa fa-arrow-up"></i>
-        <span v-show="isIncreasingOrDecreasing">{{faults}}</span>
+        <span v-show="isIncreasingOrDecreasing">{{ faults }}</span>
       </h4>
     </div>
 
@@ -36,33 +36,33 @@ export default {
       this.decreasing = false;
       this.increasing = true;
 
-      this.faults++
+      this.faults++;
 
-      if(this.timerDecrease != null) clearTimeout(this.timerDecrease)
-      if(this.timerIncrease != null) clearTimeout(this.timerIncrease)
-      
+      if (this.timerDecrease != null) clearTimeout(this.timerDecrease);
+      if (this.timerIncrease != null) clearTimeout(this.timerIncrease);
+
       this.timerIncrease = setTimeout(() => {
         this.increasing = false;
 
         // backend
 
-        this.faults = 0
+        this.faults = 0;
       }, 2000);
     },
     decrease() {
       this.increasing = false;
       this.decreasing = true;
 
-      this.faults--
-      if(this.timerDecrease != null) clearTimeout(this.timerDecrease)
-      if(this.timerIncrease != null) clearTimeout(this.timerIncrease)
+      this.faults--;
+      if (this.timerDecrease != null) clearTimeout(this.timerDecrease);
+      if (this.timerIncrease != null) clearTimeout(this.timerIncrease);
 
-      this.timerDecrease=setTimeout(() => {
+      this.timerDecrease = setTimeout(() => {
         this.decreasing = false;
 
         // backend call
 
-        this.faults = 0
+        this.faults = 0;
       }, 2000);
     },
   },
@@ -75,6 +75,15 @@ export default {
     },
     isIncreasingOrDecreasing() {
       return this.decreasing || this.increasing;
+    },
+    cantidadDefectuosa() {
+      let cantidadDefectuosa = 0;
+      if (this.$store.getters.hayTarea) {
+        for (const pulso in this.$store.getters.tarea.cantidadDefectuosaPuesto) {
+          cantidadDefectuosa += pulso.cantidad;
+        }
+      }
+      return cantidadDefectuosa;
     },
   },
 };

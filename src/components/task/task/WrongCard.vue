@@ -1,7 +1,7 @@
 <template>
   <va-card class="wrongs">
     <div class="marcador">
-      <h1 class="h1">0</h1>
+      <h1 class="h1">{{cantidadSaldos}}</h1>
       <h4 class="h4">
         <i v-show="isDecreasing" class="va-icon fa fa-arrow-down"></i>
         <i v-show="isIncreasing" class="va-icon fa fa-arrow-up"></i>
@@ -75,6 +75,15 @@ export default {
     },
     isIncreasingOrDecreasing() {
       return this.decreasing || this.increasing;
+    },
+    cantidadSaldos() {
+      let cantidadSaldos = 0;
+      if (this.$store.getters.hayTarea) {
+        for (const pulso in this.$store.getters.tarea.cantidadSaldosPuesto) {
+          cantidadSaldos += pulso.cantidad;
+        }
+      }
+      return cantidadSaldos;
     },
   },
 };

@@ -15,6 +15,8 @@
 <script>
 import GpioService from "../../services/backend/GpioService";
 import PrepaqueteService from "../../services/api/PrepaqueteService";
+import TareaNoSQLService from "../../services/api/TareaNoSQLService";
+
 import TaskProgress from "./Task";
 
 export default {
@@ -46,15 +48,55 @@ export default {
     },
     async ficharPrepaquete(codigoEtiqueta) {
       const result = [];
+
+      const maquinasSchemas = [];
+      let utillaje = "";
+      let tallaUtillaje = "";
       for (const maquina of this.$store.getters.puesto.Maquinas) {
         const response = await PrepaqueteService.getPrepaquete(
           codigoEtiqueta,
           maquina.CodSeccion
         );
-        result.push(response.data)
+
+        result.push(response.data);
+
+        const maquinaSchema = {
+          idSql: maquina.ID,
+          nombre: maquina.Nombre,
+          codSeccion: maquina.CodSeccion,
+          detallesTarea: [],
+        };
+
+        for (const tarea of response.data) {
+          utillaje = tarea.CodUtillaje;
+          tallaUtillaje = tarea.IdUtillajeTalla;
+
+          maquinaSchema.detallesTarea.push({
+            idSql: tarea.IdTarea,
+            codigoOrden: tarea.Codigo,
+            cliente: tarea.NOMBRECLI.trim(),
+            modelo: tarea.DESCRIPCIONARTICULO.trim(),
+            referencia: tarea.CodigoArticulo,
+            tallasArticulo: tarea.Tallas.split(","),
+            cantidadFabricar: tarea.CantidadFabricar,
+            cantidadFabricada: tarea.CantidadFabricada,
+            descripcionOperacion: tarea.Descripcion,
+            pedidoLinea: tarea.PedidoLinea,
+          });
+        }
+
+        maquinasSchemas.push(maquinaSchema);
       }
 
-      return result;
+      const tareaActual = {
+        idPuestoSql: this.$store.getters.puesto.Id,
+        maquinas: maquinasSchemas,
+        etiquetaFichada: codigoEtiqueta,
+        utillaje: utillaje,
+        tallaUtillaje: tallaUtillaje,
+      };
+
+      return tareaActual;
     },
     async keyUp(e) {
       var code = String(e.code);
@@ -82,17 +124,28 @@ export default {
       if (this.cadenaLectura.length == 12) {
         let prefijo = this.cadenaLectura[0];
         if (prefijo == "4") {
-          this.$swal({
-            icon: "success",
-            title: "Etiqueta tarea leída",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          var resultado = await this.ficharPrepaquete(`0${this.cadenaLectura}`);
-          console.log(resultado);
-          
+          var tareaNoSql = await this.ficharPrepaquete(
+            `0${this.cadenaLectura}`
+          );
 
-          
+          try {
+            const response = await TareaNoSQLService.start(tareaNoSql);
+            this.$store.commit('setTarea',response.data)
+            console.log(this.$store.getters.tarea)
+            this.$swal({
+              icon: "success",
+              title: "Tarea comenzada",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } catch (err) {
+            this.$swal({
+              icon: "error",
+              title: err.response.data.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
         } else if (prefijo == "0") {
           this.$swal({
             icon: "success",
