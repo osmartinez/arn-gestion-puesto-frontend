@@ -10,10 +10,7 @@
       :is-top-bar.sync="isTopBar"
       :minimized.sync="minimized"
     />
-    <app-topbar
-      class="app-layout__topbar"
-      v-if="isTopBar"
-    />
+    <app-topbar class="app-layout__topbar" v-if="isTopBar" />
     <div class="app-layout__container">
       <app-sidebar
         class="app-layout__sidebar"
@@ -22,14 +19,14 @@
       />
       <div
         class="app-layout__main"
-        :class="{'app-layout__main--top': isTopBar}"
+        :class="{ 'app-layout__main--top': isTopBar }"
       >
         <main
           class="app-layout__main-layout layout fluid gutter--xl"
           slot="content"
           role="main"
         >
-          <router-view/>
+          <router-view />
         </main>
       </div>
     </div>
@@ -37,52 +34,66 @@
 </template>
 
 <script>
-import AppPageLayout from './AppPageLayout'
-import AppNavbar from './app-navbar/AppNavbar'
-import AppTopbar from './app-topbar/AppTopbar'
-import AppSidebar from './app-sidebar/AppSidebar'
-import { originalTheme, corporateTheme } from 'vuestic-ui/src/services/themes'
+import PuestoBackendService from "../../services/backend/PuestoService";
+import MovimientoOperarioService from "../../services/api/MovimientoOperarioService";
+import AppPageLayout from "./AppPageLayout";
+import AppNavbar from "./app-navbar/AppNavbar";
+import AppTopbar from "./app-topbar/AppTopbar";
+import AppSidebar from "./app-sidebar/AppSidebar";
+import { originalTheme, corporateTheme } from "vuestic-ui/src/services/themes";
 import {
   ColorThemeActionsMixin,
   ColorThemeMixin,
-} from '../../services/vuestic-ui'
+} from "../../services/vuestic-ui";
 
 export default {
-  name: 'app-layout',
+  name: "app-layout",
   components: {
     AppPageLayout,
     AppNavbar,
     AppTopbar,
     AppSidebar,
   },
-  data () {
+  data() {
     return {
       isTopBar: false,
       minimized: false,
       mobileWidth: 767,
-    }
+      intervaloPuesto: null,
+    };
   },
-  inject: ['contextConfig'],
+  inject: ["contextConfig"],
   mixins: [ColorThemeActionsMixin, ColorThemeMixin],
-  created () {
+  created() {
     // if (this.$route.query && this.$route.query.theme === 'corporate') {
-    this.setTheme('corporate')
+    this.setTheme("corporate");
     // }
-    this.$root.$on('change-theme', this.setTheme)
+    this.$root.$on("change-theme", this.setTheme);
   },
-  beforeDestroy () {
-    this.$root.$off('change-theme', this.setTheme)
+  beforeDestroy() {
+    this.$root.$off("change-theme", this.setTheme);
   },
   methods: {
-    setTheme (themeName) {
-      const theme = themeName === 'corporate' ? corporateTheme : originalTheme
-      this.setColors(theme.colors)
+    setTheme(themeName) {
+      const theme = themeName === "corporate" ? corporateTheme : originalTheme;
+      this.setColors(theme.colors);
       Object.keys(theme.context).forEach((key) => {
-        this.contextConfig[key] = theme.context[key]
-      })
+        this.contextConfig[key] = theme.context[key];
+      });
     },
   },
-}
+  mounted: async function () {
+    if (this.$store.getters.puesto == null) {
+      const response = await PuestoBackendService.getPuesto();
+      this.$store.commit("setPuesto", response.data);
+
+      const response2 = await MovimientoOperarioService.findAll({idPuesto: this.$store.getters.puesto.Id})
+      this.$store.commit("setOperarios", response2.data)
+
+      console.log(this.$store.getters.operarios)
+    }
+  },
+};
 </script>
 
 <style lang="scss">

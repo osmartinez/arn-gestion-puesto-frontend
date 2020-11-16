@@ -16,10 +16,17 @@ import NProgress from 'nprogress'
 import '../metrics'
 import '../registerServiceWorker'
 import '../../node_modules/nprogress/nprogress.css'
+import VueTabs from 'vue-nav-tabs'
+import 'vue-nav-tabs/themes/vue-tabs.css'
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
+Vue.use(VueTabs)
 Vue.use(VuesticPlugin)
 Vue.use(YmapPlugin)
 Vue.use(VueClipboard)
+Vue.use(VueSweetalert2);
+
 Vue.use(ColorThemePlugin, {
   // override colors here.
 })

@@ -1,6 +1,6 @@
 <template>
-    <div class="progress">
-        <h1>Progreso</h1>
+    <div class="machine">
+        Máquina
     </div>
 </template>
 
@@ -10,6 +10,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="css" scoped>
 
 </style>

@@ -1,11 +1,6 @@
 <template>
   <div id="calculator">
-    <input
-      type="string"
-      class="calculator-input"
-      v-model="value"
-      @keyup.enter="getResult()"
-    />
+    <input type="string" class="calculator-input" v-model="value" />
 
     <div class="calculator-row">
       <div class="calculator-col">
@@ -51,7 +46,7 @@
       </div>
 
       <div class="calculator-col">
-        <button class="calculator-btn success action" @click="getResult()">
+        <button class="calculator-btn success action" @click="login">
           &gt;
         </button>
       </div>
@@ -60,6 +55,8 @@
 </template>
 
 <script>
+import MovimientoOperarioService from "../../services/api/MovimientoOperarioService";
+
 export default {
   data: function () {
     return {
@@ -71,14 +68,25 @@ export default {
       if (Number.isInteger(this.value)) this.value = "";
       this.value += e;
     },
-    getResult() {
-      this.value = eval(this.value);
-    },
     clear() {
       this.value = 0;
     },
     del() {
       this.value = this.value.slice(0, -1);
+    },
+    async login() {
+      const body = {
+        idPuesto: this.$store.getters.puesto.Id,
+        codigo: String(this.value),
+      };
+
+      try {
+        const response = await MovimientoOperarioService.login(body);
+        this.$store.commit("setOperarios", response.data);
+      } catch (err) {
+        console.log(err);
+      }
+      this.value = "";
     },
   },
 };

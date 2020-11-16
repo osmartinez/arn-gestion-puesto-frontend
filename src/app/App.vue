@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" >
     <router-view/>
   </div>
 </template>
@@ -18,6 +18,7 @@ export default {
       },
     }
   },
+ 
   provide () {
     return {
       contextConfig: this.contextConfig,

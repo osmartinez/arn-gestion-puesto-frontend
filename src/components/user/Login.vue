@@ -12,10 +12,10 @@
       :use-css-transforms="true"
     >
       
-      <grid-item :x="layout[0].x" :y="layout[0].y" :w="layout[0].w" :h="layout[0].h">
+      <grid-item :i="layout[0].i" :x="layout[0].x" :y="layout[0].y" :w="layout[0].w" :h="layout[0].h">
         <login-machine></login-machine>
       </grid-item>
-      <grid-item :x="layout[1].x" :y="layout[1].y" :w="layout[1].w" :h="layout[1].h">
+      <grid-item :i="layout[0].i" :x="layout[1].x" :y="layout[1].y" :w="layout[1].w" :h="layout[1].h">
         <table-users></table-users>
       </grid-item>
     </grid-layout>

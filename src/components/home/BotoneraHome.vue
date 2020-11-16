@@ -27,6 +27,11 @@ export default {
           nombre: "MÁQUINA",
           ruta: "machine",
         },
+        {
+          nombre: "CONFIG.",
+          ruta: "configuration",
+        },
+        
       ],
     };
   },

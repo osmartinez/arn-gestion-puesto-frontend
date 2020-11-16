@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import AppLayout from '../components/layouts/AppLayout.vue'
-import TaskLayout from '../components/task/Task.vue'
 
 Vue.use(Router)
 
@@ -34,25 +33,18 @@ export default new Router({
                 {
                     name: 'task',
                     path: 'task',
-                    component: TaskLayout,
-                    children:[
-                        {
-                            path: 'progress',
-                            name: 'progress',
-                            component: ()=> import('../components/task/TaskProgress.vue'),
-                            meta:{
-                                title:'Tarea'
-                            },
-                        },
-                        {
-                            path: 'stats',
-                            name: 'stats',
-                            component: ()=> import('../components/task/TaskStatistics.vue'),
-                            meta:{
-                                title:'Estadisticas'
-                            },
-                        },
-                    ]
+                    component: () => import('../components/task/Main.vue'),
+
+                },
+                {
+                    name: 'configuration',
+                    path: 'configuration',
+                    component: ()=> import('../components/configuration/Main.vue')
+                },
+                {
+                    name: 'machine',
+                    path: 'machine',
+                    component: ()=> import('../components/machine/Main.vue')
                 },
                 {
                     path: '',
