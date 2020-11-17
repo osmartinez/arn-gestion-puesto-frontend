@@ -5,6 +5,8 @@ export default {
     return Backend().get('gpio/obtenerEstadoPins')
   },
 
-  
+  pulse(body){
+    return Backend().post('gpio/pulsoMaquina',body)
+  }
 
 }

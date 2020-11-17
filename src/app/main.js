@@ -26,15 +26,25 @@ var client = mqtt.connect('ws://192.168.0.104:8883');
 client.callbacks = {}
 client.on('connect',()=>{
   console.log('MQTT CONECTADO')
-  client.subscribe('/moldeado/plc/normal',(err)=>{
+  client.subscribe('/puestos/+/login',(err)=>{
+    if(err){
+      console.log(err)
+    }
+  })
+  client.subscribe('/puestos/+/logout',(err)=>{
+    if(err){
+      console.log(err)
+    }
+  })
+  client.subscribe('/puestos/+/programacion',(err)=>{
     if(err){
       console.log(err)
     }
   })
 })
-client.on('message',(topic,message)=>{
+client.on('message',async (topic,message)=>{
   if(client.callbacks[topic]){
-    client.callbacks[topic](String(message))
+    await client.callbacks[topic](String(message))
   }
 })
 Vue.prototype.$mqtt = client

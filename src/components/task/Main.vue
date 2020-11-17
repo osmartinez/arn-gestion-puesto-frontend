@@ -28,10 +28,11 @@ export default {
       selectedIndex: 0,
       hiloLectura: null,
       cadenaLectura: "",
+      peticionPinsEnviada: false,
     };
   },
   mounted: async function () {
-    this.hiloLectura = setInterval(this.getGpioState, 3000);
+    this.hiloLectura = setInterval(async ()=>{await this.getGpioState()}, 3000);
     document.addEventListener("keyup", this.keyUp, false);
     if (this.$store.getters.hayPuesto) {
       const response3 = await TareaNoSQLService.getCurrentTask(
@@ -39,14 +40,10 @@ export default {
       );
       if (response3.data != null && response3.data._id) {
         this.$store.commit("setTask", response3.data);
-      }
-      else{
-        this.$store.commit("removeTask")
+      } else {
+        this.$store.commit("removeTask");
       }
     }
-    
-    this.$mqtt.callbacks['/moldeado/plc/normal'] = this.mqttOnReceived
-
   },
 
   beforeDestroy: function () {
@@ -54,15 +51,64 @@ export default {
     document.removeEventListener("keyup", this.keyUp);
   },
   methods: {
-    mqttOnReceived(msg){
-      console.log(msg)
-    },
     async getGpioState() {
       try {
         const response = await GpioService.getGpioState();
-        console.log(response.data);
+        
+        let pinEntrada = "";
+        const PINS = response.data;
+        for (const pin in PINS) {
+          if (
+            PINS[pin].type == "main-pulse" &&
+            PINS[pin].status == "on" &&
+            PINS[pin].mode == "in"
+          ) {
+            pinEntrada = pin;
+            break;
+          }
+        }
+
+        if (pinEntrada !== "" && PINS[pinEntrada].flanco == "up") {
+          const pulso = PINS[pinEntrada].pulsesUp.pop();
+          if (pulso === 1) {
+            const maquina = this.$store.getters.puesto.Maquinas.find(
+              (x) => x.PinPulso === pinEntrada
+            );
+            if (maquina != null && !this.peticionPinsEnviada) {
+              this.peticionPinsEnviada = true;
+
+              // axios a backend para que consuma el pulso y inserte en mongodb el pulso
+
+              const body = {
+                IdPuesto: this.$store.getters.puesto.Id,
+                IdMaquina: maquina.ID,
+                EsPulsoManual: maquina.EsPulsoManual,
+                ProductoPorPulso: maquina.ProductoPorPulso,
+                PinPulso: maquina.PinPulso,
+                DescontarAutomaticamente: maquina.DescontarAutomaticamente,
+              };
+
+              await GpioService.pulse(body);
+
+              if (this.$store.getters.hayTarea) {
+                this.$store.getters.tarea.cantidadFabricadaPuesto.push({
+                  cantidad: maquina.ProductoPorPulso,
+                  fechaMovimiento: Date.now(),
+                });
+              }
+              this.peticionPinsEnviada = false;
+              // axios!
+            }
+          }
+        }
       } catch (err) {
-        console.log(err);
+        this.$swal({
+          icon: "error",
+          title: err.response.data.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        this.peticionPinsEnviada = false;
       }
     },
     async ficharPrepaquete(codigoEtiqueta) {
@@ -122,7 +168,6 @@ export default {
       if (code.includes("Numpad") || code.includes("Digit")) {
         this.cadenaLectura += code[code.length - 1];
       } else if (e.code == "F2") {
-        
         e.preventDefault();
       }
 
@@ -158,7 +203,6 @@ export default {
             showConfirmButton: false,
             timer: 1500,
           });
-
         } else {
           //error(`Codigo no reconocido\n${cadenaLectura}`);
         }

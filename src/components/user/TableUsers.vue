@@ -43,7 +43,7 @@ export default {
           codigo: codigo,
         };
         const response = await MovimientoOperarioService.logout(body);
-        this.items = this.items.filter((x) => x.codigo !== codigo);
+        //this.items = this.items.filter((x) => x.codigo !== codigo);
         this.$store.commit("setOperarios", response.data);
       } catch (err) {
         console.log(err);
