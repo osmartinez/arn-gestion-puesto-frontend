@@ -43,7 +43,12 @@ export default {
           codigo: codigo,
         };
         const response = await MovimientoOperarioService.logout(body);
-        //this.items = this.items.filter((x) => x.codigo !== codigo);
+        if (this.$store.getters.puesto.IdPuestoHermano) {
+          this.$mqtt.publish(
+            `/puestos/${this.$store.getters.puesto.Id}/logout`,
+            JSON.stringify({ codigoOperario: body.codigo })
+          );
+        }
         this.$store.commit("setOperarios", response.data);
       } catch (err) {
         console.log(err);
