@@ -3,12 +3,12 @@
     <grid-layout
       :layout.sync="layout"
       :col-num="12"
-      :row-height="90"
+      :row-height="110"
       :is-resizable="false"
       :is-draggable="true"
       :is-mirrored="false"
       :vertical-compact="false"
-      :margin="[5, 5]"
+      :margin="[10, 10]"
       :use-css-transforms="true"
     >
       <grid-item
