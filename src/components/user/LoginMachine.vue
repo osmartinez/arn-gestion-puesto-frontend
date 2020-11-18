@@ -93,11 +93,11 @@ export default {
       try {
         const response = await MovimientoOperarioService.login(body);
         this.$store.commit("setOperarios", response.data);
-        this.$mqtt.publish(`/puestos/${this.$store.puesto.Id}/login`,JSON.stringify({codigoOperario: codigo}))
+        this.$mqtt.publish(`/puestos/${this.$store.getters.puesto.Id}/login`,JSON.stringify({codigoOperario: codigoOperario}))
       } catch (err) {
         this.$swal({
           icon: "error",
-          title: err.response.data.message,
+          title: err.response == null? err : err.response.data.message,
           showConfirmButton: false,
           timer: 1500,
         });
