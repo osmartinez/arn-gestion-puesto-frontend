@@ -32,7 +32,9 @@ export default {
     };
   },
   mounted: async function () {
-    this.hiloLectura = setInterval(async ()=>{await this.getGpioState()}, 3000);
+    this.hiloLectura = setInterval(async () => {
+      await this.getGpioState();
+    }, 3000);
     document.addEventListener("keyup", this.keyUp, false);
     if (this.$store.getters.hayPuesto) {
       const response3 = await TareaNoSQLService.getCurrentTask(
@@ -54,7 +56,7 @@ export default {
     async getGpioState() {
       try {
         const response = await GpioService.getGpioState();
-        
+
         let pinEntrada = "";
         const PINS = response.data;
         for (const pin in PINS) {
@@ -71,6 +73,14 @@ export default {
         if (pinEntrada !== "" && PINS[pinEntrada].flanco == "up") {
           const pulso = PINS[pinEntrada].pulsesUp.pop();
           if (pulso === 1) {
+            if (!this.$store.getters.hayTarea) {
+              this.$swal({
+                icon: "error",
+                title: 'No hay tarea',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            }
             const maquina = this.$store.getters.puesto.Maquinas.find(
               (x) => x.PinPulso === pinEntrada
             );
@@ -122,6 +132,9 @@ export default {
           codigoEtiqueta,
           maquina.CodSeccion
         );
+        if (response.data == null || response.data.length == 0) {
+          return null;
+        }
 
         result.push(response.data);
 
@@ -178,23 +191,31 @@ export default {
             `0${this.cadenaLectura}`
           );
 
-          try {
-            const response = await TareaNoSQLService.start(tareaNoSql);
-            this.$store.commit("setTask", response.data);
-            console.log(this.$store.getters.tarea);
-            this.$swal({
-              icon: "success",
-              title: "Tarea comenzada",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          } catch (err) {
+          if (tareaNoSql == null) {
             this.$swal({
               icon: "error",
-              title: err.response.data.message,
+              title: "La etiqueta no existe",
               showConfirmButton: false,
               timer: 1500,
             });
+          } else {
+            try {
+              const response = await TareaNoSQLService.start(tareaNoSql);
+              this.$store.commit("setTask", response.data);
+              this.$swal({
+                icon: "success",
+                title: "Tarea comenzada",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            } catch (err) {
+              this.$swal({
+                icon: "error",
+                title: err.response.data.message,
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            }
           }
         } else if (prefijo == "0") {
           this.$swal({

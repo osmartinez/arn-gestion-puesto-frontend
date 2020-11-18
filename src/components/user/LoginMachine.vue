@@ -75,14 +75,25 @@ export default {
       this.value = this.value.slice(0, -1);
     },
     async login() {
+      let codigo =  String(this.value)
+
+      let codigoOperario = 'B'
+      let numZeros = 5-codigo.length
+      for(let i = 0 ;i<numZeros;i++){
+        codigoOperario+='0'
+      }
+      codigoOperario+=codigo
+        
+
       const body = {
         idPuesto: this.$store.getters.puesto.Id,
-        codigo: String(this.value),
+        codigo:codigo,
       };
 
       try {
         const response = await MovimientoOperarioService.login(body);
         this.$store.commit("setOperarios", response.data);
+        this.$mqtt.publish(`/puestos/${this.$store.puesto.Id}/login`,JSON.stringify({codigoOperario: codigo}))
       } catch (err) {
         this.$swal({
           icon: "error",
