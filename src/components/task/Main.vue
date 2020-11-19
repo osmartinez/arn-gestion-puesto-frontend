@@ -32,9 +32,10 @@ export default {
     };
   },
   mounted: async function () {
-    this.hiloLectura = setInterval(async () => {
-      await this.getGpioState();
-    }, 3000);
+    if (this.$store.getters.hayPuesto) {
+      this.$mqttPulso.callbacks[`/puesto/pulso`] = this.pulsoDetectado;
+    }
+
     document.addEventListener("keyup", this.keyUp, false);
     if (this.$store.getters.hayPuesto) {
       const response3 = await TareaNoSQLService.getCurrentTask(
@@ -49,76 +50,49 @@ export default {
   },
 
   beforeDestroy: function () {
-    clearInterval(this.hiloLectura);
     document.removeEventListener("keyup", this.keyUp);
   },
   methods: {
-    async getGpioState() {
-      try {
-        const response = await GpioService.getGpioState();
-
-        let pinEntrada = "";
-        const PINS = response.data;
-        for (const pin in PINS) {
-          if (
-            PINS[pin].type == "main-pulse" &&
-            PINS[pin].status == "on" &&
-            PINS[pin].mode == "in"
-          ) {
-            pinEntrada = pin;
-            break;
-          }
-        }
-
-        if (pinEntrada !== "" && PINS[pinEntrada].flanco == "up") {
-          const pulso = PINS[pinEntrada].pulsesUp.pop();
-          if (pulso === 1) {
-            if (!this.$store.getters.hayTarea) {
-              this.$swal({
-                icon: "error",
-                title: 'No hay tarea',
-                showConfirmButton: false,
-                timer: 1500,
-              });
-            }
-            const maquina = this.$store.getters.puesto.Maquinas.find(
-              (x) => x.PinPulso === pinEntrada
-            );
-            if (maquina != null && !this.peticionPinsEnviada) {
-              this.peticionPinsEnviada = true;
-
-              // axios a backend para que consuma el pulso y inserte en mongodb el pulso
-
-              const body = {
-                IdPuesto: this.$store.getters.puesto.Id,
-                IdMaquina: maquina.ID,
-                EsPulsoManual: maquina.EsPulsoManual,
-                ProductoPorPulso: maquina.ProductoPorPulso,
-                PinPulso: maquina.PinPulso,
-                DescontarAutomaticamente: maquina.DescontarAutomaticamente,
-              };
-
-              await GpioService.pulse(body);
-
-              if (this.$store.getters.hayTarea) {
-                this.$store.getters.tarea.cantidadFabricadaPuesto.push({
-                  cantidad: maquina.ProductoPorPulso,
-                  fechaMovimiento: Date.now(),
-                });
-              }
-              this.peticionPinsEnviada = false;
-              // axios!
-            }
-          }
-        }
-      } catch (err) {
+    async pulsoDetectado(msg) {
+      if (!this.$store.getters.hayTarea) {
         this.$swal({
           icon: "error",
-          title: err.response.data.message,
+          title: "No hay tarea",
           showConfirmButton: false,
           timer: 1500,
         });
-        this.peticionPinsEnviada = false;
+      } else {
+        const obj = JSON.parse(msg);
+        const maquina = this.$store.getters.puesto.Maquinas.find(
+          (x) => x.ID === obj.maquinaId
+        );
+        const body = {
+          IdPuesto: this.$store.getters.puesto.Id,
+          IdMaquina: maquina.ID,
+          EsPulsoManual: maquina.EsPulsoManual,
+          ProductoPorPulso: maquina.ProductoPorPulso,
+          PinPulso: maquina.PinPulso,
+          DescontarAutomaticamente: maquina.DescontarAutomaticamente,
+        };
+
+        await GpioService.pulse(body);
+
+        const pulse = {
+          cantidad: maquina.ProductoPorPulso,
+          fechaMovimiento: Date.now(),
+        };
+
+        let contador = 0;
+        if (
+          this.$store.getters.puesto.ContadorPaquetes ==
+          this.$store.getters.contadorPaquetes
+        ) {
+          contador = maquina.ProductoPorPulso;
+        } else {
+          contador = this.$store.getters.contadorPaquetes+maquina.ProductoPorPulso;
+        }
+        this.$store.commit("setCountPacket", contador);
+        this.$store.commit("addPulseTask", pulse);
       }
     },
     async ficharPrepaquete(codigoEtiqueta) {

@@ -19,6 +19,7 @@ const store = new Vuex.Store({
     operarios: state => state.operarios,
     tarea: state => state.tarea,
     hayTarea: state => state.tarea != null,
+    contadorPaquetes: state => state.countPacket,
   },
   modules: {
     app,
@@ -29,6 +30,7 @@ const store = new Vuex.Store({
     puesto: null,
     operarios: [],
     tarea: null,
+    countPacket: 0,
   },
   mutations: {
     setToken(state, token) {
@@ -53,8 +55,17 @@ const store = new Vuex.Store({
     removeTask(state) {
       state.tarea = null
     },
+    addPulseTask(state,pulse){
+      state.tarea.cantidadFabricadaPuesto.push(pulse);
+    },
+    setCountPacket(state, cantidad){
+      state.countPacket = cantidad
+    }
   },
   actions: {
+    addPulseTask({commit},pulse){
+      commit('addPulseTask', pulse)
+    },
     setTask({ commit }, tarea) {
       commit('setTask', tarea)
     },
@@ -75,6 +86,9 @@ const store = new Vuex.Store({
     },
     setOperarios({ commit }, operarios) {
       commit('setOperarios', operarios)
+    },
+    setCountPacket({commit},cantidad){
+      commit('setCountPacket', cantidad)
     }
   },
 })

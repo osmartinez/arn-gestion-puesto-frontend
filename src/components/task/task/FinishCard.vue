@@ -17,6 +17,7 @@ export default {
             const response = await TareaNoSQLService.end({
               idPuesto: this.$store.getters.puesto.Id,
             });
+            this.$store.commit('setCountPacket',0)
             if (response.data == null || !response.data._id) {
               this.$store.commit("removeTask");
             } else {
