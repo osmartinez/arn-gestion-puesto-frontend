@@ -7,6 +7,9 @@ export default {
 
   pulse(body){
     return Backend().post('gpio/pulsoMaquina',body)
-  }
+  },
 
+  packetCountReached(pinBuzzer){
+    return Backend().post('gpio/buzzer/paquete',{pinBuzzer: pinBuzzer})
+  }
 }

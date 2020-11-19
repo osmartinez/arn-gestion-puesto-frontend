@@ -90,6 +90,9 @@ export default {
           contador = maquina.ProductoPorPulso;
         } else {
           contador = this.$store.getters.contadorPaquetes+maquina.ProductoPorPulso;
+          if(contador == this.$store.getters.puesto.ContadorPaquetes){
+            GpioService.packetCountReached(this.$store.getters.puesto.PinBuzzer)
+          }
         }
         this.$store.commit("setCountPacket", contador);
         this.$store.commit("addPulseTask", pulse);
