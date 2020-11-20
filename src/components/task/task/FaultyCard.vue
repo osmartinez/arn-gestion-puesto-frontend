@@ -47,9 +47,11 @@ export default {
 
         let countPaquetes = this.$store.getters.contadorPaquetes
         let faults = this.faults
-        countPaquetes = countPaquetes- faults
+        countPaquetes = countPaquetes+ faults
         if(countPaquetes<0) countPaquetes= countPaquetes*-1
-        this.$store.commit('setCountPacket',countPaquetes%this.$store.getters.puesto.ContadorPaquetes)
+        countPaquetes = countPaquetes%this.$store.getters.puesto.ContadorPaquetes
+        if(countPaquetes == 0)countPaquetes = this.$store.getters.puesto.ContadorPaquetes
+        this.$store.commit('setCountPacket',countPaquetes)
 
 
       } catch (error) {
