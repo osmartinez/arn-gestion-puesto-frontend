@@ -44,6 +44,13 @@ export default {
         if (response.data != null && response.data._id) {
           this.$store.commit("setTask", response.data);
         }
+
+        let countPaquetes = this.$store.getters.contadorPaquetes
+        let wrongs = this.wrongs
+        countPaquetes = countPaquetes- wrongs
+        if(countPaquetes<0) countPaquetes= countPaquetes*-1
+        this.$store.commit('setCountPacket',countPaquetes%this.$store.getters.puesto.ContadorPaquetes)
+        
       } catch (error) {
         this.$swal({
           icon: "error",
