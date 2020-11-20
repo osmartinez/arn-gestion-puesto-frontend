@@ -17,7 +17,11 @@ export default {
     },
     tallaUtillaje() {
       if (this.$store.getters.hayTarea) {
-        return `<${this.$store.getters.tarea.tallaUtillaje}>`;
+        if (this.$store.getters.tarea.tallaUtillaje === "00") {
+          return `<${this.$store.getters.tarea.maquinas[0].detallesTarea[0].tallasArticulo.join(',')}>`
+        } else {
+          return `<${this.$store.getters.tarea.tallaUtillaje}>`;
+        }
       } else {
         return "";
       }
@@ -37,7 +41,8 @@ export default {
           cantidadFabricada += pulso.cantidad;
         }
 
-        for (const pulso of this.$store.getters.tarea.cantidadDefectuosaPuesto) {
+        for (const pulso of this.$store.getters.tarea
+          .cantidadDefectuosaPuesto) {
           cantidadFabricada += pulso.cantidad;
         }
 

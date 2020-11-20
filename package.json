@@ -24,6 +24,7 @@
     "vue-nav-tabs": "^0.5.7",
     "vue-router": "^3.4.8",
     "vue-sweetalert2": "^4.1.1",
+    "vue-ultimate-skeleton-cards": "^1.0.3",
     "vuestic-ui": "^0.2.2",
     "vuex": "^3.5.1",
     "vuex-i18n": "^1.13.1",

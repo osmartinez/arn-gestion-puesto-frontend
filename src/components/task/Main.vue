@@ -4,7 +4,9 @@
       <v-tab title="Tarea">
         <task-progress></task-progress>
       </v-tab>
-      <v-tab title="Información tarea"> Info. tarea </v-tab>
+      <v-tab title="Información tarea">
+        <task-info></task-info>
+      </v-tab>
       <v-tab title="Programación"> Programación </v-tab>
       <v-tab title="Estadísticas"> Estadísticas </v-tab>
       <v-tab title="Histórico acciones"> Histórico </v-tab>
@@ -16,12 +18,14 @@
 import GpioService from "../../services/backend/GpioService";
 import PrepaqueteService from "../../services/api/PrepaqueteService";
 import TareaNoSQLService from "../../services/api/TareaNoSQLService";
-
 import TaskProgress from "./Task";
+import TaskInfo from './TaskInfo.vue'
 
 export default {
   components: {
     TaskProgress,
+    TaskInfo
+
   },
   data() {
     return {

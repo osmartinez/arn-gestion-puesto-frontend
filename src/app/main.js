@@ -21,6 +21,8 @@ import 'vue-nav-tabs/themes/vue-tabs.css'
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import mqtt from 'mqtt'
+import SkeletonCards from 'vue-ultimate-skeleton-cards'
+
 var clientPulso = mqtt.connect('ws://localhost:8883')
 clientPulso.callbacks = {}
 clientPulso.on('connect', () => {
@@ -64,6 +66,7 @@ client.on('message', async (topic, message) => {
 Vue.prototype.$mqtt = client
 Vue.prototype.$mqttPulso = clientPulso
 
+Vue.use(SkeletonCards)
 Vue.use(VueTabs)
 Vue.use(VuesticPlugin)
 Vue.use(YmapPlugin)
