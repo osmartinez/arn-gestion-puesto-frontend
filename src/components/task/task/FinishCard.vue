@@ -9,29 +9,38 @@ import TareaNoSQLService from "../../../services/api/TareaNoSQLService";
 export default {
   methods: {
     async finish() {
-      if (this.$store.getters.puesto.EsManual) {
-        alert("manual");
-      } else {
-        if (this.$store.getters.hayPuesto) {
-          try {
-            const response = await TareaNoSQLService.end({
-              idPuesto: this.$store.getters.puesto.Id,
-            });
-            this.$store.commit('setCountPacket',0)
-            if (response.data == null || !response.data._id) {
-              this.$store.commit("removeTask");
-            } else {
-              this.$store.commit("setTask", response.data);
+      if (this.$store.getters.hayPuesto && this.$store.getters.hayTarea) {
+        if (this.$store.getters.puesto.EsManual) {
+          alert("manual");
+        } else {
+          if (this.$store.getters.hayPuesto) {
+            try {
+              const response = await TareaNoSQLService.end({
+                idPuesto: this.$store.getters.puesto.Id,
+              });
+              this.$store.commit("setCountPacket", 0);
+              if (response.data == null || !response.data._id) {
+                this.$store.commit("removeTask");
+              } else {
+                this.$store.commit("setTask", response.data);
+              }
+            } catch (err) {
+              this.$swal({
+                icon: "error",
+                title: err.response.data.message,
+                showConfirmButton: false,
+                timer: 1500,
+              });
             }
-          } catch (err) {
-            this.$swal({
-              icon: "error",
-              title: err.response.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
           }
         }
+      } else {
+        this.$swal({
+          icon: "error",
+          title: "No hay tarea o puesto cargado",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     },
   },
