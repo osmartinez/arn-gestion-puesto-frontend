@@ -18,7 +18,6 @@
         :w="layout[0].w"
         :h="layout[0].h"
       >
-        <SkeletonCard />
       </grid-item>
       
     </grid-layout>

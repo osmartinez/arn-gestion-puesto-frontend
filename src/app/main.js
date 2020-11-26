@@ -4,6 +4,8 @@ import 'regenerator-runtime/runtime'
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+import $ from 'jquery'
+window.$ = $
 import App from './App'
 import { ColorThemePlugin } from '../services/vuestic-ui'
 import store from '../store/index'
@@ -16,62 +18,22 @@ import NProgress from 'nprogress'
 import '../metrics'
 import '../registerServiceWorker'
 import '../../node_modules/nprogress/nprogress.css'
+import '../../node_modules/ciao-vue-popup/dist/ciao-vue-popup.css'
 import VueTabs from 'vue-nav-tabs'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import mqtt from 'mqtt'
-import SkeletonCards from 'vue-ultimate-skeleton-cards'
-
-var clientPulso = mqtt.connect('ws://localhost:8883')
-clientPulso.callbacks = {}
-clientPulso.on('connect', () => {
-  console.log('MQTT PULSOS CONECTADO')
-  clientPulso.subscribe('/puesto/pulso', (err) => {
-    if (err) {
-      console.log(err)
-    }
-  })
-})
-clientPulso.on('message', async (topic, message) => {
-  if (clientPulso.callbacks[topic]) {
-    await clientPulso.callbacks[topic](String(message))
-  }
-})
-var client = mqtt.connect('ws://192.168.0.104:8883');
-client.callbacks = {}
-client.on('connect', () => {
-  console.log('MQTT PUESTO CONECTADO')
-  client.subscribe('/puestos/+/login', (err) => {
-    if (err) {
-      console.log(err)
-    }
-  })
-  client.subscribe('/puestos/+/logout', (err) => {
-    if (err) {
-      console.log(err)
-    }
-  })
-  client.subscribe('/puestos/+/programacion', (err) => {
-    if (err) {
-      console.log(err)
-    }
-  })
-})
-client.on('message', async (topic, message) => {
-  if (client.callbacks[topic]) {
-    await client.callbacks[topic](String(message))
-  }
-})
+//import Mqtt from '../services/Mqtt'
+/*const {client, clientPulso} = Mqtt()
 Vue.prototype.$mqtt = client
-Vue.prototype.$mqttPulso = clientPulso
+Vue.prototype.$mqttPulso = clientPulso*/
 
-Vue.use(SkeletonCards)
 Vue.use(VueTabs)
 Vue.use(VuesticPlugin)
 Vue.use(YmapPlugin)
 Vue.use(VueClipboard)
 Vue.use(VueSweetalert2);
+
 
 Vue.use(ColorThemePlugin, {
   // override colors here.
@@ -99,3 +61,5 @@ new Vue({
   store,
   render: h => h(App),
 })
+
+

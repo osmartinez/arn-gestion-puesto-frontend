@@ -1,44 +1,16 @@
 <template>
   <div id="calculator">
-    <input
-      type="string"
-      class="calculator-input"
-      v-model="value"
-      @keyup.enter="getResult()"
-    />
+    <input type="string" class="calculator-input" v-model="value" />
 
     <div class="calculator-row">
       <div class="calculator-col">
-        <button class="calculator-btn gray action" @click="clear()">C</button>
+        <button class="calculator-btn" @click="addExpresion(1)">1</button>
       </div>
       <div class="calculator-col">
-        <button class="calculator-btn gray action" @click="del()">del</button>
+        <button class="calculator-btn" @click="addExpresion(2)">2</button>
       </div>
       <div class="calculator-col">
-        <button class="calculator-btn gray action" @click="addExpresion('%')">
-          %
-        </button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn accent action" @click="addExpresion('/')">
-          /
-        </button>
-      </div>
-    </div>
-    <div class="calculator-row">
-      <div class="calculator-col">
-        <button class="calculator-btn" @click="addExpresion(7)">7</button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn" @click="addExpresion(8)">8</button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn" @click="addExpresion(9)">9</button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn accent action" @click="addExpresion('*')">
-          *
-        </button>
+        <button class="calculator-btn" @click="addExpresion(3)">3</button>
       </div>
     </div>
     <div class="calculator-row">
@@ -51,40 +23,31 @@
       <div class="calculator-col">
         <button class="calculator-btn" @click="addExpresion(6)">6</button>
       </div>
+    </div>
+    <div class="calculator-row">
       <div class="calculator-col">
-        <button class="calculator-btn accent action" @click="addExpresion('-')">
-          -
-        </button>
+        <button class="calculator-btn" @click="addExpresion(7)">7</button>
+      </div>
+      <div class="calculator-col">
+        <button class="calculator-btn" @click="addExpresion(8)">8</button>
+      </div>
+      <div class="calculator-col">
+        <button class="calculator-btn" @click="addExpresion(9)">9</button>
       </div>
     </div>
     <div class="calculator-row">
       <div class="calculator-col">
-        <button class="calculator-btn" @click="addExpresion(1)">1</button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn" @click="addExpresion(2)">2</button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn" @click="addExpresion(3)">3</button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn accent action" @click="addExpresion('+')">
-          +
+        <button class="calculator-btn danger action" @click="del()">
+          &lt;
         </button>
       </div>
-    </div>
-    <div class="calculator-row">
-      <div class="calculator-col wide">
+      <div class="calculator-col">
         <button class="calculator-btn" @click="addExpresion(0)">0</button>
       </div>
+
       <div class="calculator-col">
-        <button class="calculator-btn action" @click="addExpresion('.')">
-          .
-        </button>
-      </div>
-      <div class="calculator-col">
-        <button class="calculator-btn accent action" @click="getResult()">
-          =
+        <button class="calculator-btn success action" @click="login">
+          &gt;
         </button>
       </div>
     </div>
@@ -92,6 +55,7 @@
 </template>
 
 <script>
+
 export default {
   data: function () {
     return {
@@ -103,14 +67,14 @@ export default {
       if (Number.isInteger(this.value)) this.value = "";
       this.value += e;
     },
-    getResult() {
-      this.value = eval(this.value);
-    },
     clear() {
       this.value = 0;
     },
     del() {
       this.value = this.value.slice(0, -1);
+    },
+    async login() {
+      
     },
   },
 };
@@ -121,8 +85,10 @@ $darker: #2f2f31;
 $dark: #424345;
 $gray: #616163;
 $white: #ffffff;
-$light: #d4d4d2;
+$light: #d2d3d4;
 $accent: #f49e3f;
+$success: #70b93f;
+$danger: #bd2612;
 
 *,
 ::after,
@@ -134,7 +100,7 @@ $accent: #f49e3f;
 #calculator {
   width: 100%;
   display: flex;
-  height: 100vh;
+  height: 400px;
   max-width: 400px;
   padding: 0;
   flex-direction: column;
@@ -144,9 +110,9 @@ $accent: #f49e3f;
     color: $light;
     width: 100%;
     border: none;
-    padding: 0.8rem;
+    padding: 0.4rem;
     display: block;
-    font-size: 2.4rem;
+    font-size: 2.9rem;
     background: none;
     text-align: right;
     font-weight: lighter;
@@ -178,9 +144,9 @@ $accent: #f49e3f;
     cursor: pointer;
     padding: 0.8rem;
     outline: none;
-    font-size: 1.6rem;
+    font-size: 3.1rem;
     transition: all 0.3s ease-in-out;
-    font-weight: 200;
+    min-width: 100px;
     justify-content: center;
     background-color: $gray;
 
@@ -191,6 +157,14 @@ $accent: #f49e3f;
 
     &.gray {
       background-color: $dark;
+    }
+
+    &.success {
+      background-color: $success;
+    }
+
+    &.danger {
+      background-color: $danger;
     }
 
     &:active {

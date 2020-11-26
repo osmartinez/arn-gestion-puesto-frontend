@@ -1,17 +1,29 @@
 <template>
   <va-card
-    v-bind:class="{ flash: fullPacket }"
     id="packageCard"
+    v-bind:class="{ flash: fullPacket }"
     target="_blank"
   >
-    <h1 class="h1">{{ count }}/{{ total }}</h1>
+    <h1 class="h1" @click="setCountPacket()">{{ count }}</h1>
+    <h1 class="h1">/</h1>
+    <h1 class="h1" @click="setCountPacketSet()">{{ total }}</h1>
   </va-card>
 </template>
 
 <script>
+import Calculadora from "../../ui/Calculadora";
 export default {
+  components: {},
   data: function () {
     return {};
+  },
+  methods: {
+    setCountPacket() {
+      this.$popup("append", {
+        component: Calculadora,
+      });
+    },
+    setCountPacketSet() {},
   },
   computed: {
     total() {
@@ -31,7 +43,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="css" scoped>
 #packageCard {
   width: 100%;
   height: 100%;
@@ -47,6 +59,11 @@ export default {
   text-align: center;
   font-size: 100px;
   animation: glowing 1500ms infinite;
+}
+
+.h1 {
+  display: inline-block;
+  font-size: 120px;
 }
 
 @keyframes glowing {
