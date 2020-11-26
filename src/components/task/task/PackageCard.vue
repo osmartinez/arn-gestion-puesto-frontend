@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Calculadora from "../../ui/Calculadora";
+import PacketCountChange from "./modals/PacketCountChange.vue";
 export default {
   components: {},
   data: function () {
@@ -19,11 +19,18 @@ export default {
   },
   methods: {
     setCountPacket() {
+      this.$store.commit("setEditandoCountPacket", true);
       this.$popup("append", {
-        component: Calculadora,
+        uid: 'packet-count-change',
+        component: PacketCountChange,
       });
     },
-    setCountPacketSet() {},
+    setCountPacketSet() {
+      this.$store.commit("setEditandoTotalPacket", true);
+      this.$popup("append", {
+        component: PacketCountChange,
+      });
+    },
   },
   computed: {
     total() {

@@ -56,7 +56,7 @@ export default {
       } catch (error) {
         this.$swal({
           icon: "error",
-          title: error.response.data.message,
+          title: (typeof error.response !== 'undefined')?error.response.data.message:error,
           showConfirmButton: false,
           timer: 1500,
         });

@@ -45,19 +45,19 @@ export default {
           this.$store.commit("setTask", response.data);
         }
 
-        let countPaquetes = this.$store.getters.contadorPaquetes
-        let faults = this.faults
-        countPaquetes = countPaquetes+ faults
-        if(countPaquetes<0) countPaquetes= countPaquetes*-1
-        countPaquetes = countPaquetes%this.$store.getters.puesto.ContadorPaquetes
-        if(countPaquetes == 0)countPaquetes = this.$store.getters.puesto.ContadorPaquetes
-        this.$store.commit('setCountPacket',countPaquetes)
-
-
+        let countPaquetes = this.$store.getters.contadorPaquetes;
+        let faults = this.faults;
+        countPaquetes = countPaquetes + faults;
+        if (countPaquetes < 0) countPaquetes = countPaquetes * -1;
+        countPaquetes =
+          countPaquetes % this.$store.getters.puesto.ContadorPaquetes;
+        if (countPaquetes == 0)
+          countPaquetes = this.$store.getters.puesto.ContadorPaquetes;
+        this.$store.commit("setCountPacket", countPaquetes);
       } catch (error) {
         this.$swal({
           icon: "error",
-          title: error.response.data.message,
+          title: (typeof error.response !== 'undefined')?error.response.data.message:error,
           showConfirmButton: false,
           timer: 1500,
         });

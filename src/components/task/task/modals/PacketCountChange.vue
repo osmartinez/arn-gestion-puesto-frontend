@@ -1,5 +1,5 @@
 <template>
-  <div id="calculator">
+  <div id="calculator" v-on="$listeners">
     <input type="string" class="calculator-input" v-model="value" />
 
     <div class="calculator-row">
@@ -46,7 +46,7 @@
       </div>
 
       <div class="calculator-col">
-        <button class="calculator-btn success action" @click="login">
+        <button class="calculator-btn success action" @click="commit">
           &gt;
         </button>
       </div>
@@ -55,12 +55,20 @@
 </template>
 
 <script>
-
 export default {
   data: function () {
     return {
       value: 0,
     };
+  },
+  mounted: function () {
+    if (this.$store.getters.editandoCountPacket) {
+      this.value = this.$store.getters.contadorPaquetes;
+    } else if (this.$store.getters.editandoTotalPacket) {
+      this.value = 5;
+    } else {
+      this.value = 0;
+    }
   },
   methods: {
     addExpresion(e) {
@@ -72,9 +80,26 @@ export default {
     },
     del() {
       this.value = this.value.slice(0, -1);
+      if (this.value === "") {
+        this.value = "0";
+      }
     },
-    async login() {
-      
+    async commit() {
+      if (this.$store.getters.editandoCountPacket) {
+        this.$store.commit("setCountPacket", Number(this.value));
+      } else if (this.$store.getters.editandoTotalPacket) {
+        if (this.$store.getters.hayPuesto) {
+          const puesto = this.$store.getters.puesto;
+          puesto.ContadorPaquetes = Number(this.value);
+          this.$store.commit("setPuesto", puesto);
+        }
+      }
+
+      this.$store.commit("setEditandoCountPacket", false);
+      this.$store.commit("setEditandoTotalPacket", false);
+
+      this.$popup('close', 'packet-count-change')
+
     },
   },
 };

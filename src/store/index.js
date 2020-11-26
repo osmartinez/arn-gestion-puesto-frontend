@@ -12,7 +12,6 @@ const store = new Vuex.Store({
     config: state => state.app.config,
     palette: state => state.app.config.palette,
     isLoading: state => state.app.isLoading,
-    isAuthenticated: state => !!state.token,
     hayPuesto: state => state.puesto != null,
     puesto: state => state.puesto,
     hayOperarios: state => state.operarios.length > 0,
@@ -20,21 +19,27 @@ const store = new Vuex.Store({
     tarea: state => state.tarea,
     hayTarea: state => state.tarea != null,
     contadorPaquetes: state => state.countPacket,
+    editandoCountPacket: state => state.editandoCountPacket,
+    editandoTotalPacket: state=> state.editandoTotalPacket,
   },
   modules: {
     app,
   },
   state: {
-    token: null,
     user: null,
     puesto: null,
     operarios: [],
     tarea: null,
     countPacket: 0,
+    editandoCountPacket: false,
+    editandoTotalPacket: false,
   },
   mutations: {
-    setToken(state, token) {
-      state.token = token
+    setEditandoCountPacket(state, value){
+      state.editandoCountPacket = value
+    },
+    setEditandoTotalPacket(state, value){
+      state.editandoTotalPacket = value
     },
     setUser(state, user) {
       state.user = user
@@ -44,10 +49,6 @@ const store = new Vuex.Store({
     },
     setOperarios(state, operarios) {
       state.operarios = operarios
-    },
-    removeToken(state) {
-      state.token = null
-      state.user = null
     },
     setTask(state, tarea) {
       state.tarea = tarea
@@ -63,6 +64,12 @@ const store = new Vuex.Store({
     }
   },
   actions: {
+    setEditandoCountPacket({commit},value){
+      commit('setEditandoCountPacket', value)
+    },
+    setEditandoTotalPacket({commit},value){
+      commit('setEditandoTotalPacket', value)
+    },
     addPulseTask({commit},pulse){
       commit('addPulseTask', pulse)
     },
@@ -71,9 +78,6 @@ const store = new Vuex.Store({
     },
     removeTask({ commit }) {
       commit('removeTask')
-    },
-    setToken({ commit }, token) {
-      commit('setToken', token)
     },
     setUser({ commit }, user) {
       commit('setUser', user)
