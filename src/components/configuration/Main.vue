@@ -1,6 +1,7 @@
 <template>
   <div class="flex md6 xs12">
     <va-select
+      class="selector"
       :label="titulo"
       v-model="puestoSeleccionado"
       textBy="Descripcion"
@@ -31,8 +32,8 @@ export default {
     async guardar() {
       if (this.puestoSeleccionado.Id) {
         await PuestoServiceBackend.setPuesto(this.puestoSeleccionado);
-        const response = await PuestoServiceBackend.getPuesto()
-        this.$store.commit('setPuesto', response.data)
+        const response = await PuestoServiceBackend.getPuesto();
+        this.$store.commit("setPuesto", response.data);
         this.$router.push({ name: "home" });
       }
     },
@@ -53,7 +54,9 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.select {
-  width: 100px;
+.selector {
+  font-size: 40px;
+  width: 200px;
+  height: 80px;
 }
 </style>
