@@ -59,6 +59,11 @@ export default {
   font-size: 100px;
 }
 
+.h1 {
+  display: inline-block;
+  font-size: 120px;
+}
+
 .flash {
   width: 100%;
   height: 100%;
@@ -66,11 +71,6 @@ export default {
   text-align: center;
   font-size: 100px;
   animation: glowing 1500ms infinite;
-}
-
-.h1 {
-  display: inline-block;
-  font-size: 120px;
 }
 
 @keyframes glowing {
