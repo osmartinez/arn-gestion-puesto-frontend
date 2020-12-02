@@ -28,6 +28,7 @@ export default {
     setCountPacketSet() {
       this.$store.commit("setEditandoTotalPacket", true);
       this.$popup("append", {
+        uid:'packet-count-change',
         component: PacketCountChange,
       });
     },

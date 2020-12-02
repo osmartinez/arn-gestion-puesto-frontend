@@ -98,19 +98,19 @@ export default {
   max-height: 400px;
   text-align: center;
   font-size: 100px;
-  animation: glowing 1500ms infinite;
+  animation: glowing 1000ms infinite;
 }
 
 @keyframes glowing {
-  0% {
+0% {
     background-color: white;
     box-shadow: 0 0 3px #220000;
   }
 
   50% {
-    background-color: #43da4f;
-    box-shadow: 0 0 40px #43da4f;
-    color: rgb(255, 255, 255);
+    background-color: #ff0000;
+    box-shadow: 0 0 40px #ff0000;
+    color: yellow;
   }
 
   100% {

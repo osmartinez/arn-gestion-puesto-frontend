@@ -33,6 +33,11 @@
       "in_n_years": "in %s years"
     }
   },
+  "fichajes":{
+    "worker_code":"Code",
+    "worker_name": "Name",
+    "logout": "Exit"
+  },
   "paysheet":{
     "file_name": "Filename",
     "date_upload": "Date upload"
