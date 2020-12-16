@@ -16,12 +16,11 @@
 
 <script>
 import TaskSelector from "./task/modals/TaskSelector";
-
+import OrdenFabricacionOperacionService from "./../../services/api/OrdenFabricacionOperacionService";
+import TareaNoSQLService from "./../../services/api/TareaNoSQLService";
+import { startFromPrepaquete } from "../../services/task-services/task.procedures";
 import GpioService from "../../services/backend/GpioService";
-import PrepaqueteService from "../../services/api/PrepaqueteService";
-import OrdenFabricacionOperacionService from "../../services/api/OrdenFabricacionOperacionService";
 
-import TareaNoSQLService from "../../services/api/TareaNoSQLService";
 import TaskProgress from "./Task";
 import TaskInfo from "./TaskInfo.vue";
 
@@ -109,59 +108,22 @@ export default {
       }
     },
     async ficharPrepaquete(codigoEtiqueta) {
-      const result = [];
-
-      const maquinasSchemas = [];
-      let utillaje = "";
-      let tallaUtillaje = "";
-      for (const maquina of this.$store.getters.puesto.Maquinas) {
-        const response = await PrepaqueteService.getPrepaquete(
-          codigoEtiqueta,
-          maquina.CodSeccion
-        );
-        if (response.data == null || response.data.length == 0) {
-          return null;
-        }
-
-        result.push(response.data);
-
-        const maquinaSchema = {
-          idSql: maquina.ID,
-          nombre: maquina.Nombre,
-          codSeccion: maquina.CodSeccion,
-          detallesTarea: [],
-        };
-
-        for (const tarea of response.data) {
-          utillaje = tarea.CodUtillaje;
-          tallaUtillaje = tarea.IdUtillajeTalla;
-
-          maquinaSchema.detallesTarea.push({
-            idSql: tarea.IdTarea,
-            codigoOrden: tarea.Codigo,
-            cliente: tarea.NOMBRECLI.trim(),
-            modelo: tarea.DESCRIPCIONARTICULO.trim(),
-            referencia: tarea.CodigoArticulo,
-            tallasArticulo: tarea.Tallas.split(","),
-            cantidadFabricar: tarea.CantidadFabricar,
-            cantidadFabricada: tarea.CantidadFabricada,
-            descripcionOperacion: tarea.Descripcion,
-            pedidoLinea: tarea.PedidoLinea,
-          });
-        }
-
-        maquinasSchemas.push(maquinaSchema);
+      try {
+        const result = await startFromPrepaquete(codigoEtiqueta);
+        this.$swal({
+          icon: "success",
+          title: result,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (err) {
+        this.$swal({
+          icon: "error",
+          title: err,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
-
-      const tareaActual = {
-        idPuestoSql: this.$store.getters.puesto.Id,
-        maquinas: maquinasSchemas,
-        etiquetaFichada: codigoEtiqueta,
-        utillaje: utillaje,
-        tallaUtillaje: tallaUtillaje,
-      };
-
-      return tareaActual;
     },
     async ficharEtiquetaOperacion(codigoEtiqueta) {
       const resp = await OrdenFabricacionOperacionService.buscarPorId(
@@ -214,34 +176,7 @@ export default {
         let etiqueta = this.cadenaLectura;
         this.cadenaLectura = "";
         if (prefijo == "4" && this.$store.getters.hayPuesto) {
-          var tareaNoSql = await this.ficharPrepaquete(`0${etiqueta}`);
-
-          if (tareaNoSql == null) {
-            this.$swal({
-              icon: "error",
-              title: "La etiqueta no existe",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          } else {
-            try {
-              const response = await TareaNoSQLService.start(tareaNoSql);
-              this.$store.commit("setTask", response.data);
-              this.$swal({
-                icon: "success",
-                title: "Tarea comenzada",
-                showConfirmButton: false,
-                timer: 1500,
-              });
-            } catch (err) {
-              this.$swal({
-                icon: "error",
-                title: err.response.data.message,
-                showConfirmButton: false,
-                timer: 1500,
-              });
-            }
-          }
+          this.ficharPrepaquete(`0${etiqueta}`);
         } else if (prefijo == "0" && this.$store.getters.hayPuesto) {
           this.ficharEtiquetaOperacion(etiqueta);
         } else {
