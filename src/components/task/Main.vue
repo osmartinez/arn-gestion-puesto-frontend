@@ -160,6 +160,7 @@ export default {
       return tareaActual;
     },
     async keyUp(e) {
+      if ("activeElement" in document) document.activeElement.blur();
       var code = String(e.code);
       if (code.includes("Numpad") || code.includes("Digit")) {
         this.cadenaLectura += code[code.length - 1];
@@ -168,14 +169,11 @@ export default {
       }
 
       if (this.cadenaLectura.length == 12) {
-        console.log(this.cadenaLectura);
         let prefijo = this.cadenaLectura[0];
-        let etiqueta = this.cadenaLectura
-        this.cadenaLectura = ''
+        let etiqueta = this.cadenaLectura;
+        this.cadenaLectura = "";
         if (prefijo == "4" && this.$store.getters.hayPuesto) {
-          var tareaNoSql = await this.ficharPrepaquete(
-            `0${etiqueta}`
-          );
+          var tareaNoSql = await this.ficharPrepaquete(`0${etiqueta}`);
 
           if (tareaNoSql == null) {
             this.$swal({
