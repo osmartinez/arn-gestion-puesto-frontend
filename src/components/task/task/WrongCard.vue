@@ -1,7 +1,7 @@
 <template>
   <va-card class="wrongs">
     <div class="marcador">
-      <h1 class="h1">{{cantidadSaldos}}</h1>
+      <h1 class="h1">Saldos {{cantidadSaldos}}</h1>
       <h4 class="h4">
         <i v-show="isDecreasing" class="va-icon fa fa-arrow-down"></i>
         <i v-show="isIncreasing" class="va-icon fa fa-arrow-up"></i>

@@ -1,7 +1,7 @@
 <template>
   <va-card class="faulty">
     <div class="marcador">
-      <h1 class="h1">{{ cantidadDefectuosa }}</h1>
+      <h1 class="h1">Corrector {{ cantidadDefectuosa }}</h1>
       <h4 class="h4">
         <i v-show="isDecreasing" class="va-icon fa fa-arrow-down"></i>
         <i v-show="isIncreasing" class="va-icon fa fa-arrow-up"></i>
