@@ -19,13 +19,12 @@ import GpioService from "../../services/backend/GpioService";
 import PrepaqueteService from "../../services/api/PrepaqueteService";
 import TareaNoSQLService from "../../services/api/TareaNoSQLService";
 import TaskProgress from "./Task";
-import TaskInfo from './TaskInfo.vue'
+import TaskInfo from "./TaskInfo.vue";
 
 export default {
   components: {
     TaskProgress,
-    TaskInfo
-
+    TaskInfo,
   },
   data() {
     return {
@@ -93,9 +92,12 @@ export default {
         ) {
           contador = maquina.ProductoPorPulso;
         } else {
-          contador = this.$store.getters.contadorPaquetes+maquina.ProductoPorPulso;
-          if(contador == this.$store.getters.puesto.ContadorPaquetes){
-            GpioService.packetCountReached(this.$store.getters.puesto.PinBuzzer)
+          contador =
+            this.$store.getters.contadorPaquetes + maquina.ProductoPorPulso;
+          if (contador == this.$store.getters.puesto.ContadorPaquetes) {
+            GpioService.packetCountReached(
+              this.$store.getters.puesto.PinBuzzer
+            );
           }
         }
         this.$store.commit("setCountPacket", contador);
@@ -166,10 +168,13 @@ export default {
       }
 
       if (this.cadenaLectura.length == 12) {
+        console.log(this.cadenaLectura);
         let prefijo = this.cadenaLectura[0];
-        if (prefijo == "4") {
+        let etiqueta = this.cadenaLectura
+        this.cadenaLectura = ''
+        if (prefijo == "4" && this.$store.getters.hayPuesto) {
           var tareaNoSql = await this.ficharPrepaquete(
-            `0${this.cadenaLectura}`
+            `0${etiqueta}`
           );
 
           if (tareaNoSql == null) {
@@ -208,7 +213,6 @@ export default {
         } else {
           //error(`Codigo no reconocido\n${cadenaLectura}`);
         }
-        this.cadenaLectura = "";
       }
     },
   },

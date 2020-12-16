@@ -74,7 +74,9 @@ export default {
       }
     },
     taskCompleted() {
-      return this.cantidadFabricar!==0 &&  this.contador >= this.cantidadFabricar;
+      return (
+        this.cantidadFabricar !== 0 && this.contador >= this.cantidadFabricar
+      );
     },
   },
 };
@@ -102,7 +104,7 @@ export default {
 }
 
 @keyframes glowing {
-0% {
+  0% {
     background-color: white;
     box-shadow: 0 0 3px #220000;
   }

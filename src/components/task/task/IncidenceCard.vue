@@ -1,10 +1,19 @@
 <template>
-    <va-button class="finish" color="warning" large>INCIDENCIA</va-button>
+  <va-button class="finish" color="warning" @click="selectIncidence" large>INCIDENCIA</va-button>
 </template>
 
 <script>
+import IncidenceSelector from "./modals/IncidenceSelector.vue";
+
 export default {
-  
+  methods: {
+    selectIncidence() {
+      this.$popup("append", {
+        uid: "incidence-selector",
+        component: IncidenceSelector,
+      });
+    },
+  },
 };
 </script>
 
