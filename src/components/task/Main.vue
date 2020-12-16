@@ -15,8 +15,12 @@
 </template>
 
 <script>
+import TaskSelector from "./task/modals/TaskSelector";
+
 import GpioService from "../../services/backend/GpioService";
 import PrepaqueteService from "../../services/api/PrepaqueteService";
+import OrdenFabricacionOperacionService from "../../services/api/OrdenFabricacionOperacionService";
+
 import TareaNoSQLService from "../../services/api/TareaNoSQLService";
 import TaskProgress from "./Task";
 import TaskInfo from "./TaskInfo.vue";
@@ -159,6 +163,43 @@ export default {
 
       return tareaActual;
     },
+    async ficharEtiquetaOperacion(codigoEtiqueta) {
+      const resp = await OrdenFabricacionOperacionService.buscarPorId(
+        Number(codigoEtiqueta.slice(0, -1))
+      );
+
+      if (resp.data && resp.data.length !== 0) {
+        const body = {
+          CodigoOrden: resp.data[0].CodigoOrden,
+          Cliente: resp.data[0].Cliente,
+          CodigoArticulo: resp.data[0].CodigoArticulo,
+          Modelo: resp.data[0].Modelo,
+          Observaciones: resp.data[0].Observaciones,
+          Descripcion: resp.data[0].Descripcion,
+          CodSeccion: resp.data[0].CodSeccion,
+          PedidoLinea: resp.data[0].PedidoLinea,
+          CodUtillaje: resp.data[0].CodUtillaje,
+          TareasTallas: [],
+        };
+        for (const tareaTalla of resp.data) {
+          body.TareasTallas.push({
+            TallaUtillaje: tareaTalla.TallaUtillaje,
+            TallasArticulo: tareaTalla.TallasArticulo,
+            CantidadFabricar: tareaTalla.CantidadFabricar,
+            CantidadSaldos: tareaTalla.CantidadSaldos,
+            CantidadFabricada: tareaTalla.CantidadFabricada,
+            IdTarea: tareaTalla.IdTarea,
+          });
+        }
+
+        this.$store.commit("setOperacionSeleccion", body);
+
+        this.$popup("append", {
+          uid: "task-selector",
+          component: TaskSelector,
+        });
+      }
+    },
     async keyUp(e) {
       if ("activeElement" in document) document.activeElement.blur();
       var code = String(e.code);
@@ -201,15 +242,15 @@ export default {
               });
             }
           }
-        } else if (prefijo == "0") {
+        } else if (prefijo == "0" && this.$store.getters.hayPuesto) {
+          this.ficharEtiquetaOperacion(etiqueta);
+        } else {
           this.$swal({
-            icon: "success",
-            title: "Etiqueta proceso leída",
+            icon: "error",
+            title: "Etiqueta no interpretada",
             showConfirmButton: false,
             timer: 1500,
           });
-        } else {
-          //error(`Codigo no reconocido\n${cadenaLectura}`);
         }
       }
     },

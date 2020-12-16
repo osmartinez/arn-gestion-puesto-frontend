@@ -21,6 +21,7 @@ const store = new Vuex.Store({
     contadorPaquetes: state => state.countPacket,
     editandoCountPacket: state => state.editandoCountPacket,
     editandoTotalPacket: state=> state.editandoTotalPacket,
+    operacionSeleccion: state=>state.operacionSeleccion,
   },
   modules: {
     app,
@@ -30,11 +31,15 @@ const store = new Vuex.Store({
     puesto: null,
     operarios: [],
     tarea: null,
+    operacionSeleccion: null,
     countPacket: 0,
     editandoCountPacket: false,
     editandoTotalPacket: false,
   },
   mutations: {
+    setOperacionSeleccion(state, value){
+      state.operacionSeleccion = value
+    },
     setEditandoCountPacket(state, value){
       state.editandoCountPacket = value
     },
@@ -64,6 +69,9 @@ const store = new Vuex.Store({
     }
   },
   actions: {
+    setOperacionSeleccion({commit},operacion){
+      commit('setOperacionSeleccion', operacion)
+    },
     setEditandoCountPacket({commit},value){
       commit('setEditandoCountPacket', value)
     },
