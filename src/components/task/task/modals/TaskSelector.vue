@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import TareaNoSQLService from "../../../../services/api/TareaNoSQLService";
+import { startFromOperationLabel } from "../../../../services/task-services/task.procedures";
 
 export default {
   data: function () {
@@ -31,57 +31,25 @@ export default {
   methods: {
     async selectTask(taskSize) {
       const task = this.$store.getters.operacionSeleccion;
-      const maquinasSchemas = [];
-      for (const maquina of this.$store.getters.puesto.Maquinas) {
-        const maquinaSchema = {
-          idSql: maquina.ID,
-          nombre: maquina.Nombre,
-          codSeccion: maquina.CodSeccion,
-          detallesTarea: [],
-        };
-
-        maquinaSchema.detallesTarea.push({
-          idSql: taskSize.IdTarea,
-          codigoOrden: task.CodigoOrden,
-          cliente: task.Cliente.trim(),
-          modelo: task.Modelo.trim(),
-          referencia: task.CodigoArticulo,
-          tallasArticulo: taskSize.TallasArticulo.split(","),
-          cantidadFabricar: taskSize.CantidadFabricar,
-          cantidadFabricada: taskSize.CantidadFabricada,
-          descripcionOperacion: task.Descripcion,
-          pedidoLinea: task.PedidoLinea,
-        });
-
-        maquinasSchemas.push(maquinaSchema);
-      }
-
-      const tareaActual = {
-        idPuestoSql: this.$store.getters.puesto.Id,
-        maquinas: maquinasSchemas,
-        etiquetaFichada: "",
-        utillaje: task.CodUtillaje,
-        tallaUtillaje: taskSize.TallaUtillaje,
-      };
-
+      let res = "";
       try {
-        const response = await TareaNoSQLService.start(tareaActual);
-        this.$store.commit("setTask", response.data);
+        res = await startFromOperationLabel(task, taskSize, this.$store);
+        this.$popup("close", "task-selector");
         this.$swal({
           icon: "success",
-          title: "Tarea comenzada",
+          title: res,
           showConfirmButton: false,
           timer: 1500,
         });
+      } catch (error) {
         this.$popup("close", "task-selector");
-      } catch (err) {
+
         this.$swal({
           icon: "error",
-          title: err.response.data.message,
+          title: error,
           showConfirmButton: false,
           timer: 1500,
         });
-        this.$popup("close", "task-selector");
       }
     },
   },
