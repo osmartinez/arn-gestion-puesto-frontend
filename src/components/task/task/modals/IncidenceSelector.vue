@@ -29,7 +29,26 @@ export default {
       this.$popup("close", "incidence-selector");
     },
     generateIncidence(incidence) {
-      console.log(incidence);
+      try {
+        this.$mqtt.publish(
+          incidence.AvisarA,
+          JSON.stringify(incidence)
+        );
+        this.$swal({
+          icon: "success",
+          title: '¡Incidencia registrada!',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (err) {
+        this.$swal({
+          icon: "error",
+          title: err,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+
       this.$popup("close", "incidence-selector");
     },
   },
