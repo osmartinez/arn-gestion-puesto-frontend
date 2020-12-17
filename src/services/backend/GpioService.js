@@ -11,5 +11,9 @@ export default {
 
   packetCountReached(pinBuzzer){
     return Backend().post('gpio/buzzer/paquete',{pinBuzzer: pinBuzzer})
+  },
+
+  taskCountReached(pinBuzzer, intervals){
+    return Backend().post('gpio/buzzer/custom',{pinBuzzer: pinBuzzer, intervals: intervals})
   }
 }

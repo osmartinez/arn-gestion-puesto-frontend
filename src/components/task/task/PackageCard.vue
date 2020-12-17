@@ -12,6 +12,8 @@
 
 <script>
 import PacketCountChange from "./modals/PacketCountChange.vue";
+import GpioService from "../../../services/backend/GpioService";
+
 export default {
   components: {},
   data: function () {
@@ -21,14 +23,14 @@ export default {
     setCountPacket() {
       this.$store.commit("setEditandoCountPacket", true);
       this.$popup("append", {
-        uid: 'packet-count-change',
+        uid: "packet-count-change",
         component: PacketCountChange,
       });
     },
     setCountPacketSet() {
       this.$store.commit("setEditandoTotalPacket", true);
       this.$popup("append", {
-        uid:'packet-count-change',
+        uid: "packet-count-change",
         component: PacketCountChange,
       });
     },
@@ -45,6 +47,14 @@ export default {
       return this.$store.getters.contadorPaquetes;
     },
     fullPacket() {
+      if (
+        this.$store.getters.hayPuesto &&
+        this.$store.getters.hayTarea &&
+        this.$store.getters.puesto.AvisarFinPaquete &&
+        this.total === this.count
+      ) {
+        GpioService.packetCountReached(this.$store.getters.puesto.PinBuzzer);
+      }
       return this.total === this.count;
     },
   },

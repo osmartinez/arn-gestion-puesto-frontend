@@ -10,6 +10,8 @@
   </va-card>
 </template>
 <script>
+import GpioService from "../../../services/backend/GpioService";
+
 export default {
   computed: {
     codigoUtillaje() {
@@ -74,6 +76,15 @@ export default {
       }
     },
     taskCompleted() {
+      if (
+        this.$store.getters.hayPuesto &&
+        this.$store.getters.hayTarea &&
+        this.$store.getters.puesto.AvisarFinPaquete &&
+        this.total === this.count
+      ) {
+        GpioService.taskCountReached(this.$store.getters.puesto.PinBuzzer,[300,300,300]);
+      }
+
       return (
         this.cantidadFabricar !== 0 && this.contador >= this.cantidadFabricar
       );
