@@ -109,7 +109,7 @@ export default {
     },
     async ficharPrepaquete(codigoEtiqueta) {
       try {
-        const result = await startFromPrepaquete(codigoEtiqueta);
+        const result = await startFromPrepaquete(codigoEtiqueta, this.$store);
         this.$swal({
           icon: "success",
           title: result,
@@ -155,7 +155,7 @@ export default {
         }
 
         this.$store.commit("setOperacionSeleccion", body);
-
+        this.$popup("close", "task-selector");
         this.$popup("append", {
           uid: "task-selector",
           component: TaskSelector,
@@ -180,6 +180,7 @@ export default {
         } else if (prefijo == "0" && this.$store.getters.hayPuesto) {
           this.ficharEtiquetaOperacion(etiqueta);
         } else {
+          console.log(etiqueta);
           this.$swal({
             icon: "error",
             title: "Etiqueta no interpretada",

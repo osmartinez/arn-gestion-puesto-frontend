@@ -1,66 +1,78 @@
 <template>
-  <div id="incidence-selector">
-    <table>
-      <tr>
-        <td>
-          <va-button class="incidence-button" color="warning" large
-            >FALTA TAREA</va-button
-          >
-        </td>
-        <td>
-          <va-button class="incidence-button" color="warning" large
-            >FALTA UTILLAJE</va-button
-          >
-        </td>
-        <td>
-          <va-button class="incidence-button" color="warning" large
-            >CAMBIO URGENTE</va-button
-          >
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <va-button class="incidence-button" color="warning" large
-            >TAREA DEFECTO</va-button
-          >
-        </td>
-        <td>
-          <va-button class="incidence-button" color="warning" large
-            >INCIDENCIA 1</va-button
-          >
-        </td>
-        <td>
-          <va-button
-            @click="close"
-            class="incidence-button"
-            color="danger"
-            large
-            >SALIR .........</va-button
-          >
-        </td>
-      </tr>
-    </table>
+  <div class="incidence-selector">
+    <h1 class="title">{{ title }}</h1>
+    <ul :style="gridStyle" class="incidence-list">
+      <va-button
+        @click="generateIncidence(incidence)"
+        v-for="incidence in incidences"
+        v-bind:key="incidence.Nombre"
+        v-show="incidence.Habilitada === true"
+        class="incidence"
+        color="warning"
+        large
+      >
+        <span>{{ incidence.Nombre }}</span>
+      </va-button>
+    </ul>
   </div>
 </template>
 
 <script>
 export default {
+  data: function () {
+    return {
+      colNumber: 3,
+    };
+  },
   methods: {
     close() {
       this.$popup("close", "incidence-selector");
+    },
+    generateIncidence(incidence) {
+      console.log(incidence);
+      this.$popup("close", "incidence-selector");
+    },
+  },
+  computed: {
+    incidences() {
+      const incidenciaSalir = [{ Nombre: "X         ", Habilitada: true }];
+      if (this.$store.getters.hayPuesto) {
+        const incidencias = this.$store.getters.puesto.Incidencias;
+        return incidencias.concat(incidenciaSalir);
+      } else {
+        return incidenciaSalir;
+      }
+    },
+    gridStyle() {
+      return {
+        gridTemplateColumns: `repeat(${this.colNumber}, minmax(100px,1fr))`,
+      };
+    },
+    title() {
+      return "Selecciona una incidencia";
     },
   },
 };
 </script>
 
 <style scoped>
-.incidence-button {
-  width: 250px;
-  height: 190px;
-  max-height: 400px;
+.title {
+  font-size: 30px;
   text-align: center;
-  font-size: 40px;
-  margin: 1px;
-  border-radius: 10px;
+}
+
+.incidence-selector {
+  width: 850px;
+}
+
+.incidence-list {
+  display: grid;
+  grid-gap: 1em;
+}
+
+.incidence {
+  font-size: 42px;
+  width: 250px;
+  height: 140px;
 }
 </style>
