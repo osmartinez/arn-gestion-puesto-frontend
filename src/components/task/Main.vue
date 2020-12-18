@@ -67,6 +67,14 @@ export default {
           showConfirmButton: false,
           timer: 1500,
         });
+
+        if (this.$store.getters.hayPuesto) {
+          GpioService.taskCountReached(this.$store.getters.puesto.PinBuzzer, [
+            200,
+            200,
+            200,
+          ]);
+        }
       } else {
         const obj = JSON.parse(msg);
         const maquina = this.$store.getters.puesto.Maquinas.find(
