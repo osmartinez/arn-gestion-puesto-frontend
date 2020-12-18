@@ -72,7 +72,6 @@ export default {
           GpioService.taskCountReached(this.$store.getters.puesto.PinBuzzer, [
             200,
             200,
-            200,
           ]);
         }
       } else {

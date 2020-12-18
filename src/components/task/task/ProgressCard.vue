@@ -79,8 +79,8 @@ export default {
       if (
         this.$store.getters.hayPuesto &&
         this.$store.getters.hayTarea &&
-        this.$store.getters.puesto.AvisarFinPaquete &&
-        this.total === this.count
+        this.$store.getters.puesto.AvisarFinTarea &&
+        this.contador === this.cantidadFabricar
       ) {
         GpioService.taskCountReached(this.$store.getters.puesto.PinBuzzer,[300,300,300]);
       }
