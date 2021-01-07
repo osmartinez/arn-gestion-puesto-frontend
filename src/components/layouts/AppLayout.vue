@@ -128,10 +128,15 @@ export default {
         try {
           const response = await PuestoBackendService.getPuesto();
           this.$store.commit("setPuesto", response.data);
-          errorRecuperarPuesto=false
+          errorRecuperarPuesto = false;
         } catch {
-          errorRecuperarPuesto =  true
-          console.log('Error al recuperar el puesto')
+          errorRecuperarPuesto = true;
+          this.$swal({
+            icon: "error",
+            title: 'Error al recuperar el puesto',
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
       }
     }
