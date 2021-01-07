@@ -119,37 +119,44 @@ export default {
   },
 
   mounted: async function () {
-    if (!this.$store.getters.hayPuesto) {
+    try {
       const response = await PuestoBackendService.getPuesto();
       this.$store.commit("setPuesto", response.data);
-
-      while (!this.$store.getters.hayPuesto) {
-        const response = await PuestoBackendService.getPuesto();
-        this.$store.commit("setPuesto", response.data);
-      }
-
-      if (this.$store.getters.hayPuesto) {
-        // asignación callbacks mqtt
-        this.$mqtt.callbacks[
-          `/puestos/${this.$store.getters.puesto.IdPuestoHermano}/login`
-        ] = this.puestoHermanoLogin;
-        this.$mqtt.callbacks[
-          `/puestos/${this.$store.getters.puesto.IdPuestoHermano}/logout`
-        ] = this.puestoHermanoLogout;
-
-        // buscar todos los operarios que hay actualmente en el puesto y meterlos en la store
-        const response2 = await MovimientoOperarioService.findAll({
-          idPuesto: this.$store.getters.puesto.Id,
-        });
-        this.$store.commit("setOperarios", response2.data);
-
-        // obtener tarea actual en ejecución en este puesto
-        const response3 = await TareaNoSQLService.getCurrentTask(
-          this.$store.getters.puesto.Id
-        );
-        if (response3.data != null && response3.data._id) {
-          this.$store.commit("setTask", response3.data);
+    } catch (error) {
+      let errorRecuperarPuesto = true;
+      while (errorRecuperarPuesto) {
+        try {
+          const response = await PuestoBackendService.getPuesto();
+          this.$store.commit("setPuesto", response.data);
+          errorRecuperarPuesto=false
+        } catch {
+          errorRecuperarPuesto =  true
+          console.log('Error al recuperar el puesto')
         }
+      }
+    }
+
+    if (this.$store.getters.hayPuesto) {
+      // asignación callbacks mqtt
+      this.$mqtt.callbacks[
+        `/puestos/${this.$store.getters.puesto.IdPuestoHermano}/login`
+      ] = this.puestoHermanoLogin;
+      this.$mqtt.callbacks[
+        `/puestos/${this.$store.getters.puesto.IdPuestoHermano}/logout`
+      ] = this.puestoHermanoLogout;
+
+      // buscar todos los operarios que hay actualmente en el puesto y meterlos en la store
+      const response2 = await MovimientoOperarioService.findAll({
+        idPuesto: this.$store.getters.puesto.Id,
+      });
+      this.$store.commit("setOperarios", response2.data);
+
+      // obtener tarea actual en ejecución en este puesto
+      const response3 = await TareaNoSQLService.getCurrentTask(
+        this.$store.getters.puesto.Id
+      );
+      if (response3.data != null && response3.data._id) {
+        this.$store.commit("setTask", response3.data);
       }
     }
   },
