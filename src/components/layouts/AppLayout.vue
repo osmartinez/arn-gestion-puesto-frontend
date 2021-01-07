@@ -123,6 +123,11 @@ export default {
       const response = await PuestoBackendService.getPuesto();
       this.$store.commit("setPuesto", response.data);
 
+      while (!this.$store.getters.hayPuesto) {
+        const response = await PuestoBackendService.getPuesto();
+        this.$store.commit("setPuesto", response.data);
+      }
+
       if (this.$store.getters.hayPuesto) {
         // asignación callbacks mqtt
         this.$mqtt.callbacks[
